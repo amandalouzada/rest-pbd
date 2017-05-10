@@ -36,8 +36,17 @@ app.param('collectionName', function(req, res, next, collectionName){
   return next()
 })
 
+
 app.get('/', function(req, res, next) {
   res.send('please select a collection, e.g., /collections/messages')
+})
+
+//Lista os 10 primeiros registros
+app.get('/collections', function(req, res, next) {
+  db.listCollections({}).toArray(function(e, results){
+    if (e) return next(e)
+    res.send(results)
+  })
 })
 
 //Lista os 10 primeiros registros
@@ -114,11 +123,13 @@ app.post('/upload/:collectionName', function(req, res) {
 
   sampleFile.mv('./uploads/db.dbf', function(err) {
     if (err)
-    return res.status(500).send(err);
+      return res.status(500).send(err);
 
 
     readDbf('./uploads/db.dbf', req.params.collectionName, function(err, res) {
-        // res is an array of objects
+      if(err)
+        return res.status(500).send(err);
+
     })
 
     res.send("inserindo");
