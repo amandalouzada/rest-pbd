@@ -100,6 +100,16 @@ app.delete('/collections/:collectionName/:id', function(req, res, next) {
   })
 })
 
+app.get('/collectionsOrder/:collectionName/:parametro/:ordem/:page', function(req, res, next) {
+  var query={};
+  query[req.params.parametro]= parseInt(req.params.ordem);
+  console.log(query);
+  req.collection.find().sort(query).skip(parseInt(req.params.page)).limit(100).toArray(function(e, results){
+    if (e) return next(e)
+    res.send(results)
+  })
+})
+
 app.get('/collectionsPagina/:collectionName/:page', function(req, res, next) {
   req.collection.find().skip(parseInt(req.params.page)).limit(100).toArray(function(e, results){
     if (e) return next(e)
@@ -110,8 +120,7 @@ app.get('/collectionsPagina/:collectionName/:page', function(req, res, next) {
 app.get('/collectionsQtd/:collectionName', function(req, res, next) {
   req.collection.count(function(e, count){
     if (e) return next(e)
-    var qtd = {count: count};
-    res.send(qtd)
+    res.send({count})
   })
 })
 
